@@ -47,10 +47,10 @@ const addBooksHandler = (request, h) => {
     publisher,
     pageCount,
     readPage,
-    finished,
     reading,
     insertedAt,
     updateAt,
+    finished,
   };
   books.push(newBook);
 
@@ -103,4 +103,27 @@ const getAllBookshandler = (request, h) => {
   }.code(200);
 };
 
-module.exports = { addBooksHandler, getAllBookshandler };
+const getBooksByIdHandler = (request, h) => {
+  const { bookId } = request.params;
+  const book = books.filter((b) => b.id === bookId)[0];
+
+  if (book) {
+    const response = h.response({
+      status: 'success',
+      data: {
+        book,
+      },
+    })
+      .code(200);
+    return response;
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Buku tidak ditemukan',
+  })
+    .code(404);
+  return response;
+};
+
+module.exports = { addBooksHandler, getAllBookshandler, getBooksByIdHandler };
