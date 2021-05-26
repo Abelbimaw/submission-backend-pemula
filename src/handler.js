@@ -13,7 +13,7 @@ const addBooksHandler = (request, h) => {
     reading,
   } = request.payload;
 
-  // Mengecek Nama apakah null
+  // Check whether name is null
   if (!name) {
     const response = h.response({
       status: 'fail',
@@ -23,7 +23,7 @@ const addBooksHandler = (request, h) => {
     return response;
   }
 
-  // mengecek readPage > readCount
+  // Check readPage > readCount
   if (readPage > pageCount) {
     const response = h.response({
       status: 'fail',
@@ -56,7 +56,7 @@ const addBooksHandler = (request, h) => {
 
   const isSuccess = books.filter((book) => book.id === id).length > 0;
 
-  // 201 berhasil ditambahkan buku
+  // Success add Book
   if (isSuccess) {
     const response = h.response({
       status: 'success',
@@ -78,8 +78,10 @@ const addBooksHandler = (request, h) => {
 };
 
 const getAllBookshandler = (request, h) => {
+  // request data with query ouput
   const { name, reading, finished } = request.query;
 
+  // Check whether name, reading and finished null
   if (!name && !reading && !finished) {
     const response = h.response({
       status: 'success',
@@ -107,6 +109,7 @@ const getBooksByIdHandler = (request, h) => {
   const { bookId } = request.params;
   const book = books.filter((b) => b.id === bookId)[0];
 
+  // Check whether is bookId or not
   if (book) {
     const response = h.response({
       status: 'success',
@@ -139,7 +142,8 @@ const editBookHandler = (request, h) => {
     reading,
   } = request.payload;
 
-  if (name == null) {
+  // Check whether is name or null
+  if (!name) {
     const response = h.response({
       status: 'fail',
       message: 'Gagal memperbarui buku. Mohon isi nama buku',
@@ -148,7 +152,7 @@ const editBookHandler = (request, h) => {
     return response;
   }
 
-  // mengecek readPage > readCount
+  // Check readPage > readCount
   if (readPage > pageCount) {
     const response = h.response({
       status: 'fail',
@@ -162,6 +166,7 @@ const editBookHandler = (request, h) => {
   const finished = pageCount === readPage;
   const index = books.findIndex((book) => book.id === bookId);
 
+  // Check was index is -1 or the is true index BookId
   if (index !== -1) {
     books[index] = {
       ...books[index],
@@ -197,6 +202,7 @@ const deleteBookHandler = (request, h) => {
   const { bookId } = request.params;
   const index = books.findIndex((b) => b.id === bookId);
 
+  // Check was index is -1 or the is true index BookId
   if (index !== -1) {
     books.splice(books, 1);
     const response = h.response({
