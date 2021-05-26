@@ -81,28 +81,90 @@ const getAllBookshandler = (request, h) => {
   // request data with query ouput
   const { name, reading, finished } = request.query;
 
-  // Check whether name, reading and finished null
-  if (!name && !reading && !finished) {
+  // Check book contain same name
+  if (name !== undefined) {
+    const bookfromat = books
+      .filter((b) => b.name.toLowerCase().includes(name.toLowerCase()));
+    return h.response({
+      status: 'success',
+      data: {
+        books: bookfromat.map((b) => ({
+          id: b.id,
+          name: b.name,
+          publisher: b.publisher,
+        })),
+      },
+    });
+  }
+
+  // Check list book that have been read
+  if (reading !== undefined) {
+    const bookRead = books
+      .filter((b) => b.reading === (reading === '1')).map((b) => ({
+        id: b.id,
+        name: b.name,
+        publisher: b.publisher,
+      }));
+
     const response = h.response({
       status: 'success',
       data: {
-        books: books.map((book) => ({
-          id: book.id,
-          name: book.name,
-          publisher: book.publisher,
-        })),
+        books: bookRead,
+      },
+    });
+    response.code(200);
+    return response;
+  }
+
+  // Check book have been finished read
+  if (finished !== undefined) {
+    const bookFinish = books
+      .filter((book) => book.finished === (finished === '1')).map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      }));
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: bookFinish,
       },
     })
       .code(200);
     return response;
   }
 
-  return {
-    status: 'success',
-    data: {
-      books: [],
-    },
-  }.code(200);
+  // Check whether name, reading and finished null
+  if (!name && !reading && !finished) {
+    return h.response({
+      status: 'success',
+      data: {
+        books: books.map((b) => ({
+          id: b.id,
+          name: b.name,
+          publisher: b.publisher,
+        })),
+      },
+    })
+      .code(200);
+  }
+
+  if (books !== undefined) {
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: [],
+      },
+    }).code(200);
+    return response;
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Gagal menampilkan buku',
+  }).code(404);
+  return response;
 };
 
 const getBooksByIdHandler = (request, h) => {
@@ -164,7 +226,7 @@ const editBookHandler = (request, h) => {
 
   const updatedAt = new Date().toISOString();
   const finished = pageCount === readPage;
-  const index = books.findIndex((book) => book.id === bookId);
+  const index = books.findIndex((b) => b.id === bookId);
 
   // Check was index is -1 or the is true index BookId
   if (index !== -1) {
